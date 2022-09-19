@@ -11,41 +11,50 @@ const uri: string = process.env.MONGO_URI || '';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const body = JSON.parse(req.body);
-    console.log(Team, body)
+    console.log(Team);
     await mongoose.connect(uri);
     const user = await User.findOne({ email: body.email });
-    const slackUsers= await SlackUser.find({ user: user?._id }).populate<{ child: ITeam; }>({
-      path: 'team',
-      select: ['name', 'teamId']
-    }).select(['slackId', 'user', 'team']).lean()
+    const slackUsers = await SlackUser.find({ user: user?._id })
+      .populate<{ child: ITeam }>({
+        path: 'team',
+        select: ['name', 'teamId'],
+      })
+      .select(['slackId', 'user', 'team'])
+      .lean();
 
     const slackIds = slackUsers.map((user) => user._id);
 
     const feedbacks = await Feedback.find({
-      to: { $in: slackIds }
-    }).populate<{ child: ISlackUser; }>({
-      path: 'from',
-      select: ['slackId', 'user'],
-      populate: {
-        path: 'user',
-        select: ['name']
-      }
-    }).populate<{ child: ISlackUser; }>({
-      path: 'to',
-      select: ['slackId'],
-    }).select(['content', 'from', 'to']).lean();
+      to: { $in: slackIds },
+    })
+      .populate<{ child: ISlackUser }>({
+        path: 'from',
+        select: ['slackId', 'user'],
+        populate: {
+          path: 'user',
+          select: ['name'],
+        },
+      })
+      .populate<{ child: ISlackUser }>({
+        path: 'to',
+        select: ['slackId'],
+      })
+      .select(['content', 'from', 'to'])
+      .lean();
 
     const slackUsersWithFeedbacks = slackUsers.map((slackUser) => {
-      const feedbackForUser = feedbacks.filter((feedback) => feedback.to.slackId === slackUser?.slackId)
+      const feedbackForUser = feedbacks.filter(
+        (feedback) => feedback.to.slackId === slackUser?.slackId
+      );
       return {
         ...slackUser,
-        feedbacks: feedbackForUser
-      }
-    })
+        feedbacks: feedbackForUser,
+      };
+    });
 
     res.status(200).json(slackUsersWithFeedbacks);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(400).json(err);
   }
 }
