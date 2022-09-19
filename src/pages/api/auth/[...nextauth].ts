@@ -1,6 +1,8 @@
 import NextAuth from 'next-auth';
 import SlackProvider from 'next-auth/providers/slack';
 
+console.log(process.env.NEXT_PUBLIC_CLIENT_ID, process.env.NEXT_PUBLIC_CLIENT_SECRET)
+
 export default NextAuth({
   providers: [
     SlackProvider({
