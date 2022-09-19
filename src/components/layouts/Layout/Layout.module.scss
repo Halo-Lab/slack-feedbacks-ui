@@ -1,0 +1,14 @@
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 64px;
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
