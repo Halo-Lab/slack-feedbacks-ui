@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth'
+import NextAuth from 'next-auth';
 import SlackProvider from 'next-auth/providers/slack';
 
 export default NextAuth({
@@ -6,20 +6,20 @@ export default NextAuth({
     SlackProvider({
       clientId: process.env.CLIENT_ID || '',
       clientSecret: process.env.CLIENT_SECRET || '',
-    })
+    }),
   ],
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // 24 hours
   },
-  jwt: {
-  },
-  pages: {
-  },
+  jwt: {},
+  pages: {},
   callbacks: {
-    async signIn() { return true },
+    async signIn() {
+      return true;
+    },
   },
   events: {},
   debug: true,
-})
+});
