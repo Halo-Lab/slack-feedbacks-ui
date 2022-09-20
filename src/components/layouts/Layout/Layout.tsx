@@ -1,49 +1,67 @@
-import { ReactNode } from 'react';
 import Head from 'next/head';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { ReactNode } from 'react';
+import { useRouter } from 'next/router';
+import { useSession, signOut } from 'next-auth/react';
+import ClipLoader from 'react-spinners/ClipLoader';
+import CustomButton from 'src/components/atoms/Button/CustomButton';
 import classes from './Layout.module.scss';
 
-type LayoutType = {
+type IProps = {
   children: ReactNode;
   title?: string;
 };
 
-export default function Layout({ title = 'feedbacks', children }: LayoutType) {
+const requireAuthRoutes = ['/', '/test'];
+
+export default function Layout({ title = 'feedbacks', children }: IProps) {
+  const router = useRouter();
   const { data: session, status } = useSession();
-  const handleSignin = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    signIn();
-  };
-  const handleSignout = (e: { preventDefault: () => void }) => {
+  const handleSignout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     signOut();
   };
-  return (
-    <>
-      <Head>
-        <title>{title}</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
+
+  if (router.pathname === '/auth/signin' && session) {
+    router.push('/');
+    return (
+      <div className={classes.container}>
+        <ClipLoader color={'gray'} loading={true} size={150} />
+      </div>
+    );
+  }
+
+  if (requireAuthRoutes.includes(router.pathname) && !session && status !== 'loading') {
+    router.push('/auth/signin');
+    return (
+      <div className={classes.container}>
+        <ClipLoader color={'gray'} loading={true} size={150} />
+      </div>
+    );
+  }
+
+  if (
+    (requireAuthRoutes.includes(router.pathname) && session) ||
+    (!requireAuthRoutes.includes(router.pathname) && router.pathname !== '/auth/signin')
+  ) {
+    return (
       <>
-        {status !== 'loading' && (
-          <main className={classes.container}>
-            {session ? (
-              <div className={classes.wrapper}>
-                <div>
-                  <a href="#" onClick={handleSignout} className="btn-signin">
-                    Sign out
-                  </a>
-                </div>
-                {children}
-              </div>
-            ) : (
-              <a href="#" onClick={handleSignin} className="btn-signin">
-                Sign in
-              </a>
+        <Head>
+          <title>{title}</title>
+          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        </Head>
+        <main className={classes.container}>
+          <div className={classes.wrapper}>
+            {router.pathname !== '/auth/signin' && (
+              <CustomButton href="#" onClick={handleSignout}>
+                <p>Sign out</p>
+              </CustomButton>
             )}
-          </main>
-        )}
+            {children}
+          </div>
+        </main>
       </>
-    </>
-  );
+    );
+  }
+
+  return null;
 }

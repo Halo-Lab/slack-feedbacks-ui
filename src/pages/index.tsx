@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
+import HomeScene from 'src/scenes/HomeScene/HomeScene';
 import Layout from '../components/layouts/Layout/Layout';
-import HomeScene from '../scenes/Home/HomeScene';
 
 const Home: NextPage = () => {
   return (
