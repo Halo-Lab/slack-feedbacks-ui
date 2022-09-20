@@ -5,12 +5,31 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import classes from './HomeScene.module.scss';
 
-type IUserInfo = any[];
+export type IUserInfo = {
+  _id: string;
+  slackId: string;
+  team: {
+    _id: string;
+    teamId: string;
+    name: string;
+  };
+  feedbacks: {
+    _id: string;
+    content: string;
+    from: {
+      slackId: string;
+      user: {
+        _id: string;
+        name: string;
+      };
+    };
+  }[];
+};
 
 export default function HomeScene() {
   const { data: session } = useSession();
   const [isFetching, setIsFetching] = useState(false);
-  const [userInfo, setUserInfro] = useState<IUserInfo>();
+  const [userInfo, setUserInfro] = useState<IUserInfo[]>();
   const [userInfoIndex, setUserInfoIndex] = useState(0);
 
   if (!session) return null;
@@ -43,7 +62,7 @@ export default function HomeScene() {
     <div className={classes.container}>
       <ClipLoader color={'gray'} loading={isFetching} size={150} />
       {userInfo && !userInfo[userInfoIndex] && !isFetching && (
-        <p>Sorry, You don't have feedbacks in any workspaces yet</p>
+        <p className={classes.text}>Sorry, You don't have feedbacks in any workspaces yet</p>
       )}
       {userInfo && userInfo[userInfoIndex] && (
         <>
@@ -60,16 +79,13 @@ export default function HomeScene() {
           </Tabs>
           {
             <div className={classes.wrapper}>
-              <p>Your feedbacks in this workspace</p>
-              {
-                // @ts-ignore
-                userInfo[userInfoIndex].feedbacks.map((item) => (
-                  <div>
-                    <h4>From {item?.from?.user?.name}</h4>
-                    <p>{item.content}</p>
-                  </div>
-                ))
-              }
+              <h3 className={classes.text}>Your feedbacks in this workspace</h3>
+              {userInfo[userInfoIndex].feedbacks.map((item) => (
+                <div key={item._id}>
+                  <h4 className={classes.text}>From {item?.from?.user?.name}</h4>
+                  <p className={classes.text}>{item.content}</p>
+                </div>
+              ))}
             </div>
           }
         </>

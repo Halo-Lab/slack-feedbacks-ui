@@ -5,11 +5,12 @@ type Type = {
   children: ReactNode;
   variant?: 'text' | 'outlined' | 'contained' | undefined;
   href: string;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const CustomButton = ({ variant = 'contained', href, children }: Type) => {
+const CustomButton = ({ variant = 'contained', href, children, onClick }: Type) => {
   return (
-    <Button variant={variant} href={href}>
+    <Button onClick={onClick} variant={variant} href={href}>
       {children || null}
     </Button>
   );

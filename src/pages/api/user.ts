@@ -11,7 +11,7 @@ const uri: string = process.env.MONGO_URI || '';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const body = JSON.parse(req.body);
-    console.log(Team);
+    console.log(Team, body);
     await mongoose.connect(uri);
     const user = await User.findOne({ email: body.email });
     const slackUsers = await SlackUser.find({ user: user?._id })
@@ -51,7 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         feedbacks: feedbackForUser,
       };
     });
-
     res.status(200).json(slackUsersWithFeedbacks);
   } catch (err) {
     console.log(err);
