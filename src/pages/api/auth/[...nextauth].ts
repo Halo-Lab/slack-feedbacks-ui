@@ -14,6 +14,7 @@ export default NextAuth({
     updateAge: 24 * 60 * 60, // 24 hours
   },
   jwt: {},
+  secret: process.env.NEXT_PUBLIC_CLIENT_ID,
   pages: {
     signIn: '/auth/signin',
   },

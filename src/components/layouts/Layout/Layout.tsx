@@ -41,7 +41,7 @@ export default function Layout({ title = 'feedbacks', children }: IProps) {
 
   if (
     (requireAuthRoutes.includes(router.pathname) && session) ||
-    (!requireAuthRoutes.includes(router.pathname) && router.pathname !== '/auth/signin')
+    !requireAuthRoutes.includes(router.pathname)
   ) {
     return (
       <>
