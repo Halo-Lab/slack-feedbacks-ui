@@ -10,7 +10,7 @@ type Type = {
 
 const CustomButton = ({ variant = 'contained', href, children, onClick }: Type) => {
   return (
-    <Button onClick={onClick} variant={variant} href={href}>
+    <Button onClick={onClick} variant={variant} href={href} color="success">
       {children || null}
     </Button>
   );

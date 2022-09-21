@@ -1,7 +1,7 @@
-import NextAuth from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import SlackProvider from 'next-auth/providers/slack';
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     SlackProvider({
       clientId: process.env.NEXT_PUBLIC_CLIENT_ID || '',
@@ -25,4 +25,6 @@ export default NextAuth({
   },
   events: {},
   debug: true,
-});
+};
+
+export default NextAuth(authOptions);
