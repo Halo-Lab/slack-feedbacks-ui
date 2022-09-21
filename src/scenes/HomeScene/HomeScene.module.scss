@@ -1,16 +1,36 @@
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 16px;
+  width: 100%;
 }
 
 .wrapper {
   width: 100%;
   padding: 16px 0;
+  display: flex;
+  gap: 48px;
+  align-items: center;
 }
 
-.text {
-  margin: 12px;
+.loader {
+  margin: auto;
+  width: fit-content;
+}
+
+.stat {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.link {
+  display: block;
+  padding: 16px;
+  margin: 8px 0;
+  font-size: 24px;
+  color: rgb(103, 97, 97);
+  border-bottom: 1px solid rgb(103, 97, 97);
+  transition: 0.3s;
+
+  &:hover {
+    color: rgb(175, 167, 167);
+    border-bottom: 1px solid rgb(175, 167, 167);
+  }
 }
