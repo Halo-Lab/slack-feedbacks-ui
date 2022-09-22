@@ -22,6 +22,13 @@ export type IUserInfo = {
         name: string;
       };
     };
+    to: {
+      slackId: string;
+      user: {
+        _id: string;
+        name: string;
+      };
+    };
   }[];
 };
 

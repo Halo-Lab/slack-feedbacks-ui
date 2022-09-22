@@ -4,27 +4,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import classes from './LeftForMeFeedbacksScene.module.scss';
-
-export type IUserInfo = {
-  _id: string;
-  slackId: string;
-  team: {
-    _id: string;
-    teamId: string;
-    name: string;
-  };
-  feedbacks: {
-    _id: string;
-    content: string;
-    from: {
-      slackId: string;
-      user: {
-        _id: string;
-        name: string;
-      };
-    };
-  }[];
-};
+import { IUserInfo } from '../HomeScene/HomeScene';
 
 export default function LeftForMeFeedbacksScene() {
   const { data: session } = useSession();

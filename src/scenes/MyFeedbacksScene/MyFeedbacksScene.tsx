@@ -4,27 +4,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import classes from './MyFeedbacksScene.module.scss';
-
-export type IUserInfo = {
-  _id: string;
-  slackId: string;
-  team: {
-    _id: string;
-    teamId: string;
-    name: string;
-  };
-  feedbacks: {
-    _id: string;
-    content: string;
-    to: {
-      slackId: string;
-      user: {
-        _id: string;
-        name: string;
-      };
-    };
-  }[];
-};
+import { IUserInfo } from '../HomeScene/HomeScene';
 
 export default function MyFeedbacksScene() {
   const { data: session } = useSession();
