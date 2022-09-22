@@ -4,7 +4,7 @@ import Layout from '../components/layouts/Layout/Layout';
 
 const Home: NextPage = () => {
   return (
-    <Layout title="feedbacks">
+    <Layout title="Feedbacks">
       <HomeScene />
     </Layout>
   );
