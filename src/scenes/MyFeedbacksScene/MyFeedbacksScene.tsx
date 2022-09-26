@@ -9,22 +9,26 @@ import { IUserInfo } from '../HomeScene/HomeScene';
 export default function MyFeedbacksScene() {
   const { data: session } = useSession();
   const [isFetching, setIsFetching] = useState(false);
-  const [userInfo, setUserInfro] = useState<IUserInfo[]>();
+  const [userInfo, setUserInfo] = useState<IUserInfo[]>();
   const [userInfoIndex, setUserInfoIndex] = useState(0);
 
   if (!session) return null;
 
   const getUserData = async (email: string) => {
-    const response = await fetch('/api/my-feedbacks', {
-      method: 'POST',
-      body: JSON.stringify({
-        email,
-      }),
-    });
+    try {
+      const response = await fetch('/api/my-feedbacks', {
+        method: 'POST',
+        body: JSON.stringify({
+          email,
+        }),
+      });
 
-    const data = await response.json();
-    setUserInfro(data);
-    setIsFetching(false);
+      const data = await response.json();
+      setUserInfo(data);
+      setIsFetching(false);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {

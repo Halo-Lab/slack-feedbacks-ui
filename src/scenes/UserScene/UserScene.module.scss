@@ -1,0 +1,28 @@
+.container {
+  width: 100%;
+}
+
+.loader {
+  margin: auto;
+  width: fit-content;
+}
+
+.stat {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.link {
+  display: block;
+  padding: 16px;
+  margin: 8px 0;
+  font-size: 24px;
+  color: rgb(103, 97, 97);
+  border-bottom: 1px solid rgb(103, 97, 97);
+  transition: 0.3s;
+
+  &:hover {
+    color: rgb(175, 167, 167);
+    border-bottom: 1px solid rgb(175, 167, 167);
+  }
+}

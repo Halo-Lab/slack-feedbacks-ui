@@ -9,7 +9,7 @@ import { IUserInfo } from '../HomeScene/HomeScene';
 export default function LeftForMeFeedbacksScene() {
   const { data: session } = useSession();
   const [isFetching, setIsFetching] = useState(false);
-  const [userInfo, setUserInfro] = useState<IUserInfo[]>();
+  const [userInfo, setUserInfo] = useState<IUserInfo[]>();
   const [userInfoIndex, setUserInfoIndex] = useState(0);
 
   if (!session) return null;
@@ -23,7 +23,7 @@ export default function LeftForMeFeedbacksScene() {
     });
 
     const data = await response.json();
-    setUserInfro(data);
+    setUserInfo(data);
     setIsFetching(false);
   };
 
