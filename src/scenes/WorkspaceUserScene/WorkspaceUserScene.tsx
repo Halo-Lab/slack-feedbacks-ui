@@ -44,7 +44,7 @@ export default function WorkspaceUserScene({ user, workspace }: IProps) {
       const response = await fetch('/api/feedbacks-user-workspace', {
         method: 'POST',
         body: JSON.stringify({
-          email: user,
+          nickname: user,
           team: workspace,
         }),
       });

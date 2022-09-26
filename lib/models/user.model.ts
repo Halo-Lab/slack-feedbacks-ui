@@ -13,6 +13,10 @@ const UserSchema = new Schema<IUser>(
       default: '',
       unique: true
     },
+    nickname: {
+      type: String,
+      unique: true
+    },
   },
   {
     timestamps: true,

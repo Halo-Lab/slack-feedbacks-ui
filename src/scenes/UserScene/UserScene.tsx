@@ -31,7 +31,7 @@ export default function UserScene({ user }: IProps) {
       const response = await fetch('/api/teams-by-user', {
         method: 'POST',
         body: JSON.stringify({
-          email: user,
+          nickname: user,
         }),
       });
 

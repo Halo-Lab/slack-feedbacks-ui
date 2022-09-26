@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const body = JSON.parse(req.body);
     await mongoose.connect(uri);
-    const user = await User.findOne({ email: body.email });
+    const user = await User.findOne({ nickname: body.nickname });
     const slackUsers = await SlackUser.find({ user: user?._id })
       .populate<{ child: ITeam }>({
         path: 'team',
