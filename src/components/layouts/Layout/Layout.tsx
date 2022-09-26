@@ -41,6 +41,14 @@ export default function Layout({ title = 'feedbacks', children }: IProps) {
     );
   }
 
+  if (!requireAuthRoutes.includes(router.pathname)) {
+    return (
+      <div className={classes.container}>
+        <div className={classes.wrapper}>{children}</div>
+      </div>
+    );
+  }
+
   if (
     (requireAuthRoutes.includes(router.pathname) && session) ||
     !requireAuthRoutes.includes(router.pathname)
