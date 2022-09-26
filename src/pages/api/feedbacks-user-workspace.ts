@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const body = JSON.parse(req.body);
     await mongoose.connect(uri);
-    const user = await User.findOne({ email: body.email });
+    const user = await User.findOne({ nickname: body.nickname });
     const team = await Team.findOne({ name: body.team });
     if (!team) {
       res.status(400).json({ error: 'No such team' });
