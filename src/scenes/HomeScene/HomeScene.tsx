@@ -41,6 +41,7 @@ export default function HomeScene() {
   const [isFetching, setIsFetching] = useState(false);
   const [userData, setUserData] = useState<IUserData>();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   if (!session) return null;
 
@@ -100,6 +101,24 @@ export default function HomeScene() {
                 <span className={classes.stat}>Nickname: </span>
                 {userData.nickname}
               </p>
+              <div className={classes.box}>
+                <p className={classes.text}>
+                  <span className={classes.stat}>Public URL: </span>
+                  {`${process.env.NEXT_PUBLIC_BASE_URL}/${userData.nickname}`}
+                </p>
+                <span
+                  className={classes.copy}
+                  role="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${process.env.NEXT_PUBLIC_BASE_URL}/${userData.nickname}`
+                    );
+                    setIsCopied(true);
+                  }}
+                >
+                  <img src={isCopied ? '/checkmark.svg' : '/copy.svg'} />
+                </span>
+              </div>
               <CustomButton variant="text" onClick={() => setIsEditModalOpen(true)}>
                 Edit profile
               </CustomButton>
