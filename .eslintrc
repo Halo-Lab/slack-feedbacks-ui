@@ -32,6 +32,7 @@
     }
   },
   "rules": {
+    "no-useless-escape": "off",
     "no-promise-executor-return": "off",
     "no-restricted-syntax": "off",
     "no-return-assign": "off",

@@ -1,0 +1,24 @@
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 900px;
+  max-height: 90%;
+  background-color: white;
+  border: 2px solid #000;
+  box-shadow: 4px;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.button {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.image {
+  max-width: 300px;
+}

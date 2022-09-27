@@ -44,6 +44,28 @@ export default function Layout({ title = 'feedbacks', children }: IProps) {
   if (!requireAuthRoutes.includes(router.pathname)) {
     return (
       <div className={classes.container}>
+        <div className={classes.header}>
+          <Link href="/">
+            <a>
+              <Image
+                loading="eager"
+                src={'/team-garden.png'}
+                alt="User photo"
+                width={32}
+                height={32}
+              />
+            </a>
+          </Link>
+          {session ? (
+            <CustomButton onClick={handleSignout} variant={'outlined'}>
+              <span>Sign out</span>
+            </CustomButton>
+          ) : (
+            <CustomButton href="/auth/signin" variant={'outlined'}>
+              <span>Sign in</span>
+            </CustomButton>
+          )}
+        </div>
         <div className={classes.wrapper}>{children}</div>
       </div>
     );
@@ -73,7 +95,7 @@ export default function Layout({ title = 'feedbacks', children }: IProps) {
                   />
                 </a>
               </Link>
-              <CustomButton href="#" onClick={handleSignout} variant={'outlined'}>
+              <CustomButton onClick={handleSignout} variant={'outlined'}>
                 <span>Sign out</span>
               </CustomButton>
             </div>
