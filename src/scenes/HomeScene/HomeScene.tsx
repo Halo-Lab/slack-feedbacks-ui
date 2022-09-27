@@ -6,6 +6,7 @@ import { IUserData } from 'types/types';
 import CustomButton from 'src/components/atoms/Button/CustomButton';
 import classes from './HomeScene.module.scss';
 import EditModal from './components/EditModal/EditModal';
+import { ITeam } from '../UserScene/UserScene';
 
 export type IUserInfo = {
   _id: string;
@@ -40,10 +41,21 @@ export default function HomeScene() {
   const isLoading = status === 'loading';
   const [isFetching, setIsFetching] = useState(false);
   const [userData, setUserData] = useState<IUserData>();
+  const [teams, setTeams] = useState<ITeam[]>();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   if (!session) return null;
+
+  const getTeams = async () => {
+    try {
+      const response = await fetch('/api/teams-by-owner');
+      const data = await response.json();
+      setTeams(data.teams);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const getUser = async () => {
     try {
@@ -56,15 +68,20 @@ export default function HomeScene() {
 
       const data = await response.json();
       setUserData(data.userInfo);
-      setIsFetching(false);
     } catch (e) {
       console.log(e);
     }
   };
 
+  const getData = async () => {
+    await getUser();
+    await getTeams();
+    setIsFetching(false);
+  };
+
   useEffect(() => {
-    getUser();
     setIsFetching(true);
+    getData();
   }, []);
 
   return (
@@ -130,6 +147,16 @@ export default function HomeScene() {
               </Link>
             </div>
           </div>
+          {teams && (
+            <div>
+              <h2>My teams:</h2>
+              {teams.map((item) => (
+                <Link key={item._id} href={`/teams/${item.team?.name}`}>
+                  <a className={classes.link}>{item.team?.name}</a>
+                </Link>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>

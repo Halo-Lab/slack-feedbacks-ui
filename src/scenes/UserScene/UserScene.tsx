@@ -8,7 +8,7 @@ type IProps = {
   user?: string;
 };
 
-type ITeam = {
+export type ITeam = {
   _id: string;
   team?: {
     _id: string;

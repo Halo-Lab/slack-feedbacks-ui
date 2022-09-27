@@ -56,3 +56,18 @@
     max-width: 100%;
   }
 }
+
+.link {
+  display: block;
+  padding: 16px;
+  margin: 8px 0;
+  font-size: 24px;
+  color: rgb(103, 97, 97);
+  border-bottom: 1px solid rgb(103, 97, 97);
+  transition: 0.3s;
+
+  &:hover {
+    color: rgb(175, 167, 167);
+    border-bottom: 1px solid rgb(175, 167, 167);
+  }
+}

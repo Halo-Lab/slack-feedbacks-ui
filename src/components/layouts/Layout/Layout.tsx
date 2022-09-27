@@ -13,7 +13,7 @@ type IProps = {
   title?: string;
 };
 
-const requireAuthRoutes = ['/', '/left-for-me-feedbacks', '/my-feedbacks'];
+const requireAuthRoutes = ['/', '/left-for-me-feedbacks', '/my-feedbacks', '/teams/[id]'];
 
 export default function Layout({ title = 'feedbacks', children }: IProps) {
   const router = useRouter();
