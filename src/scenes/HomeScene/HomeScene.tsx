@@ -104,15 +104,13 @@ export default function HomeScene() {
               <div className={classes.box}>
                 <p className={classes.text}>
                   <span className={classes.stat}>Public URL: </span>
-                  {`${process.env.NEXT_PUBLIC_BASE_URL}/${userData.nickname}`}
+                  {`https://team.garden/${userData.nickname}`}
                 </p>
                 <span
                   className={classes.copy}
                   role="button"
                   onClick={() => {
-                    navigator.clipboard.writeText(
-                      `${process.env.NEXT_PUBLIC_BASE_URL}/${userData.nickname}`
-                    );
+                    navigator.clipboard.writeText(`https://team.garden/${userData.nickname}`);
                     setIsCopied(true);
                   }}
                 >
