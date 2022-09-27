@@ -1,15 +1,11 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { IUserData } from 'types/types';
 import classes from './UserScene.module.scss';
 
 type IProps = {
   user?: string;
-};
-
-type IUserInfo = {
-  name: string;
-  email: string;
 };
 
 type ITeam = {
@@ -22,7 +18,7 @@ type ITeam = {
 };
 
 export default function UserScene({ user }: IProps) {
-  const [userInfo, setUserInfo] = useState<IUserInfo>();
+  const [userInfo, setUserInfo] = useState<IUserData>();
   const [teams, setTeams] = useState<ITeam[]>();
   const [isFetching, setIsFetching] = useState(false);
 
@@ -48,6 +44,7 @@ export default function UserScene({ user }: IProps) {
     setIsFetching(true);
     getTeams();
   }, [user]);
+
   return (
     <div className={classes.container}>
       <div className={classes.loader}>
@@ -55,6 +52,11 @@ export default function UserScene({ user }: IProps) {
       </div>
       {userInfo && (
         <div className={classes.info}>
+          {userInfo.picture && (
+            <div>
+              <img src={userInfo.picture} />
+            </div>
+          )}
           <p className={classes.text}>
             <span className={classes.stat}>Name: </span>
             {userInfo.name}
@@ -65,7 +67,7 @@ export default function UserScene({ user }: IProps) {
           </p>
         </div>
       )}
-      {teams && (
+      {teams && teams.length > 0 && (
         <div>
           <h1>Available workspaces</h1>
           {teams.map((item) => (

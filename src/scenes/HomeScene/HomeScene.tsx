@@ -1,8 +1,11 @@
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import Link from 'next/link';
+import { IUserData } from 'types/types';
+import CustomButton from 'src/components/atoms/Button/CustomButton';
 import classes from './HomeScene.module.scss';
+import EditModal from './components/EditModal/EditModal';
 
 export type IUserInfo = {
   _id: string;
@@ -35,33 +38,71 @@ export type IUserInfo = {
 export default function HomeScene() {
   const { data: session, status } = useSession();
   const isLoading = status === 'loading';
+  const [isFetching, setIsFetching] = useState(false);
+  const [userData, setUserData] = useState<IUserData>();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (!session) return null;
 
+  const getUser = async () => {
+    try {
+      const response = await fetch('/api/get-user-by-email', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: session.user?.email,
+        }),
+      });
+
+      const data = await response.json();
+      setUserData(data.userInfo);
+      setIsFetching(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+    setIsFetching(true);
+  }, []);
+
   return (
     <div className={classes.container}>
+      {userData && isEditModalOpen && (
+        <EditModal
+          user={userData}
+          handleClose={() => setIsEditModalOpen(false)}
+          open={isEditModalOpen}
+        />
+      )}
       <div className={classes.loader}>
-        <ClipLoader color={'gray'} loading={isLoading} size={150} />
+        <ClipLoader color={'gray'} loading={isLoading || isFetching} size={150} />
       </div>
-      {session && session.user && (
+      {session && session.user && userData && (
         <>
           <div className={classes.wrapper}>
             <div>
-              <Image
+              <img
+                className={classes.image}
                 loading="eager"
-                src={session.user?.image || ''}
+                src={userData.picture || ''}
                 alt="User photo"
-                width={300}
-                height={300}
               />
               <p className={classes.text}>
                 <span className={classes.stat}>Name: </span>
-                {session.user?.name}
+                {userData.name}
               </p>
               <p className={classes.text}>
                 <span className={classes.stat}>Email: </span>
-                {session.user?.email}
+                {userData.email}
               </p>
+              <p className={classes.text}>
+                <span className={classes.stat}>Nickname: </span>
+                {userData.nickname}
+              </p>
+              <CustomButton variant="text" onClick={() => setIsEditModalOpen(true)}>
+                Edit profile
+              </CustomButton>
             </div>
             <div>
               <Link href={'/left-for-me-feedbacks'}>

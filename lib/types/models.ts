@@ -14,7 +14,8 @@ export type IUser = {
   id?: string;
   name?: string;
   email?: string;
-  nickname: string
+  nickname: string,
+  picture?: string
 }
 
 export type ISlackUser = {

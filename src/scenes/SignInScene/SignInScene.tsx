@@ -16,7 +16,7 @@ export default function SignInScene({ providers }: IProps) {
     <div>
       {Object.values(providers).map((provider) => (
         <div key={provider.name}>
-          <CustomButton href="#" onClick={() => signIn(provider.id, options)}>
+          <CustomButton onClick={() => signIn(provider.id, options)}>
             <p>Sign in with {provider.name}</p>
           </CustomButton>
         </div>

@@ -1,11 +1,13 @@
 import Button from '@mui/material/Button';
 import { ReactNode } from 'react';
 
-type Type = {
+type IProps = {
   children: ReactNode;
   variant?: 'text' | 'outlined' | 'contained' | undefined;
-  href: string;
+  href?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  disabled?: boolean;
+  isLoading?: boolean;
 };
 
 const CustomButton = ({
@@ -15,10 +17,12 @@ const CustomButton = ({
   onClick = () => {
     console.log('empty');
   },
-}: Type) => {
+  disabled = false,
+  isLoading = false,
+}: IProps) => {
   return (
-    <Button onClick={onClick} variant={variant} href={href} color="success">
-      {children || null}
+    <Button disabled={disabled} onClick={onClick} variant={variant} href={href} color="success">
+      {isLoading ? <span>Loading</span> : children || null}
     </Button>
   );
 };
