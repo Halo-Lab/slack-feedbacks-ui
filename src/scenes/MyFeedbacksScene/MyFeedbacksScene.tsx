@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+
 import ClipLoader from 'react-spinners/ClipLoader';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+
 import classes from './MyFeedbacksScene.module.scss';
-import { IUserInfo } from '../HomeScene/HomeScene';
+
+import { IUserInfo, IUserInfoFeedback } from '../HomeScene/HomeScene';
+import EditFeedbackModal from './components/EditFeedbackModal/EditFeedbackModal';
 
 export default function MyFeedbacksScene() {
   const { data: session } = useSession();
   const [isFetching, setIsFetching] = useState(false);
   const [userInfo, setUserInfo] = useState<IUserInfo[]>();
   const [userInfoIndex, setUserInfoIndex] = useState(0);
+  const [isEditFeedbackModalOpen, setIsEditFeedbackModalOpen] = useState(false);
+  const [userInfoFeedback, setUserInfoFeedback] = useState<IUserInfoFeedback>();
 
   if (!session) return null;
 
@@ -44,6 +50,13 @@ export default function MyFeedbacksScene() {
 
   return (
     <div className={classes.container}>
+      {userInfoFeedback && isEditFeedbackModalOpen && (
+        <EditFeedbackModal
+          userInfoFeedback={userInfoFeedback}
+          handleClose={() => setIsEditFeedbackModalOpen(false)}
+          open={isEditFeedbackModalOpen}
+        />
+      )}
       <div className={classes.loader}>
         <ClipLoader color={'gray'} loading={isFetching} size={150} />
       </div>
@@ -68,8 +81,24 @@ export default function MyFeedbacksScene() {
               <h3 className={classes.text}>You left feedbacks in this workspace</h3>
               {userInfo[userInfoIndex].feedbacks.map((item) => (
                 <div key={item._id}>
-                  <h4 className={classes.text}>To {item?.to?.user?.name}</h4>
-                  <p className={classes.text}>{item.content}</p>
+                  <h4 className={classes.text}>To {item.to.user.name}</h4>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <p className={classes.text}>{item.content}</p>
+                    <img
+                      onClick={() => {
+                        setUserInfoFeedback(item);
+                        setIsEditFeedbackModalOpen(true);
+                      }}
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        marginLeft: '15px',
+                        cursor: 'pointer',
+                      }}
+                      src="/edit-pencil.png"
+                      alt="edit-pencil"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
