@@ -1,12 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import ClipLoader from 'react-spinners/ClipLoader';
 import Link from 'next/link';
+
+import ClipLoader from 'react-spinners/ClipLoader';
+
 import { IUserData } from 'types/types';
 import CustomButton from 'src/components/atoms/Button/CustomButton';
-import classes from './HomeScene.module.scss';
-import EditModal from './components/EditModal/EditModal';
 import { ITeam } from '../UserScene/UserScene';
+import EditModal from './components/EditModal/EditModal';
+
+import classes from './HomeScene.module.scss';
+
+export type IUserInfoFromTo = {
+  slackId: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+};
+
+export type IUserInfoFeedback = {
+  _id: string;
+  content: string;
+  from: IUserInfoFromTo;
+  to: IUserInfoFromTo;
+};
 
 export type IUserInfo = {
   _id: string;
@@ -16,24 +35,7 @@ export type IUserInfo = {
     teamId: string;
     name: string;
   };
-  feedbacks: {
-    _id: string;
-    content: string;
-    from: {
-      slackId: string;
-      user: {
-        _id: string;
-        name: string;
-      };
-    };
-    to: {
-      slackId: string;
-      user: {
-        _id: string;
-        name: string;
-      };
-    };
-  }[];
+  feedbacks: IUserInfoFeedback[];
 };
 
 export default function HomeScene() {
