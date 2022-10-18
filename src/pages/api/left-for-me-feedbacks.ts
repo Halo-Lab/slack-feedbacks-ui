@@ -48,6 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         path: 'to',
         select: ['slackId'],
       })
+      .sort({ createdAt: -1 })
       .select(['content', 'from', 'to'])
       .lean();
 

@@ -59,6 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           select: ['name', 'email'],
         },
       })
+      .sort({ createdAt: -1 })
       .select(['content', 'from', 'to'])
       .lean();
 

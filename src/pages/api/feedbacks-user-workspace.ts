@@ -27,6 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           select: ['name'],
         },
       })
+      .sort({ createdAt: -1 })
       .select(['content', 'from', 'createdAt']);
     const feedbacksFrom = await Feedback.find({ from: slackUser?._id })
       .populate<{ child: ISlackUser }>({
@@ -37,6 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           select: ['name'],
         },
       })
+      .sort({ createdAt: -1 })
       .select(['content', 'to', 'createdAt']);
 
     res.status(200).json({ feedbacksTo, feedbacksFrom });
