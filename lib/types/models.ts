@@ -1,28 +1,41 @@
 export type ITeam = {
-  name: string,
-  id: string,
+  name: string;
+  id: string;
   teamId: string;
   lang: 'en' | 'ua';
+  welcomeMessage: string;
   onboardingStep: number;
   isCompletedOnboarding: boolean;
   isStartedOnboarding: boolean;
   channelId: string;
   channelName: string;
-}
+};
 
 export type IUser = {
   id?: string;
   name?: string;
   email?: string;
-  nickname: string,
-  picture?: string
-}
+  nickname: string;
+  picture?: string;
+};
 
 export type ISlackUser = {
   slackId: string;
-  team: ITeam,
-  user: IUser
-}
+  team: ITeam;
+  user: IUser;
+  role: 'admin' | 'user';
+};
+
+export type IFeature = {
+  id: string;
+  command: string;
+};
+
+export type ITeamFeatures = {
+  id: string;
+  feature: IFeature;
+  team: ITeam;
+};
 
 export interface IFeedback {
   from: ISlackUser;

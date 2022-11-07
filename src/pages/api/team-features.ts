@@ -2,10 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from 'next-auth/next';
 
 import mongoose from 'lib/mongoose';
-import User from 'lib/models/user.model';
-import SlackUser from 'lib/models/slackuser.model';
-import Team from 'lib/models/team.model';
-import { IUser } from 'lib/types/models';
+
+import { IFeature, ITeam } from '../../../lib/types/models';
+import TeamFeatures from '../../../lib/models/teamfeature.model';
+import Team from '../../../lib/models/team.model';
+import Feature from '../../../lib/models/feature.model';
 
 import { authOptions } from './auth/[...nextauth]';
 
@@ -23,18 +24,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     await mongoose.connect(uri);
 
-    const team = await Team.findOne({ name: body.name });
-
-    const slackUsers = await SlackUser.find({ team: team?._id })
-      .populate<{ child: IUser }>({
-        path: 'user',
-        model: User,
-        select: ['_id', 'name', 'nickname', 'picture', 'email'],
+    const teamFeatures = await TeamFeatures.find({ team: body?.teamId })
+      .populate<{ child: IFeature }>({
+        path: 'feature',
+        model: Feature,
+        select: ['id', 'command'],
       })
-      .select(['team', 'role'])
+      .populate<{ child: ITeam }>({
+        path: 'team',
+        model: Team,
+        select: ['id', 'name', 'lang', 'welcomeMessage'],
+      })
+      .select(['id', 'feature', 'team'])
       .lean();
 
-    res.status(200).json({ users: slackUsers, team });
+    res.status(200).json({ teamFeatures });
   } catch (err) {
     console.log(err);
     res.status(400).json(err);

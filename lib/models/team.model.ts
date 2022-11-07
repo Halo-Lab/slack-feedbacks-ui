@@ -7,29 +7,32 @@ const TeamSchema = new Schema<ITeam>(
   {
     teamId: {
       type: String,
-      unique: true
+      unique: true,
     },
     name: {
-      type: String
+      type: String,
     },
     lang: {
       type: String,
-      enum : ['en','ua'],
-      default: 'en'
+      enum: ['en', 'ua'],
+      default: 'en',
+    },
+    welcomeMessage: {
+      type: String,
     },
     onboardingStep: {
-      type: Number
+      type: Number,
     },
     channelId: {
-      type: String
+      type: String,
     },
     isCompletedOnboarding: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isStartedOnboarding: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   {
@@ -46,4 +49,3 @@ const TeamSchema = new Schema<ITeam>(
 const Team = mongoose.model<ITeam>('Team', TeamSchema);
 
 export default Team;
-
