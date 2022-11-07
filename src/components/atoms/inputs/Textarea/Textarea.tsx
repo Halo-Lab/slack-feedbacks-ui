@@ -9,7 +9,7 @@ type IPropsOnBlur = {
 type IProps = {
   label?: string;
   inputValue: string;
-  onBlur: ({ value }: IPropsOnBlur) => void;
+  onBlur?: ({ value }: IPropsOnBlur) => void;
   onChange: ({ value }: IPropsOnBlur) => void;
   inputError?: string;
 };
@@ -20,18 +20,13 @@ const Textarea = ({ label, inputValue = '', onBlur, inputError, onChange }: IPro
       <label>
         {label && <p className={classes.title}>{label}</p>}
         <TextareaAutosize
+          className={classes.textarea}
           value={inputValue}
           onChange={(ev) => {
             onChange({ value: ev.target.value });
           }}
           onBlur={() => {
-            onBlur({ value: inputValue });
-          }}
-          style={{
-            width: '350px',
-            height: '150px',
-            border: '1px solid #1976d2',
-            padding: '10px',
+            return onBlur ? onBlur({ value: inputValue }) : null;
           }}
         />
         {inputError && <span className={classes.error}>{inputError}</span>}

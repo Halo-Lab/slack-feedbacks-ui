@@ -1,14 +1,16 @@
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%;
+  width: 50%;
   max-width: 900px;
   max-height: 90%;
   background-color: white;
   border: 2px solid #000;
-  box-shadow: 4px;
   padding: 24px;
   overflow-y: auto;
 }
@@ -21,4 +23,56 @@
 
 .image {
   max-width: 300px;
+}
+
+.adminPanel {
+  width: 100%;
+  border: 1px solid #1976d2;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  padding: 10px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.teamTitle {
+  color: #1976d2;
+  font-size: 30px;
+  font-weight: bolder;
+  margin-bottom: 20px;
+}
+
+.language {
+  display: flex;
+  align-items: center;
+}
+
+.featuresFlag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.welcomeMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.messageTitle {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.welcomeMessage p {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  color: #1976d2;
 }

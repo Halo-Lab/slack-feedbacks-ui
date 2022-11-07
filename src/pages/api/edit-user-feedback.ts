@@ -15,13 +15,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session = await unstable_getServerSession(req, res, authOptions);
 
     if (!body.email) {
-      res.status(400).json({ error: 'Email is required' });
+      return res.status(400).json({ error: 'Email is required' });
     }
     if (!session) {
-      res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json({ error: 'Not authenticated' });
     }
     if (session?.user?.email !== body.email) {
-      res.status(401).json({ error: 'Access denied' });
+      return res.status(401).json({ error: 'Access denied' });
     }
 
     await mongoose.connect(uri);

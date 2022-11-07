@@ -7,7 +7,7 @@ const SlackUserSchema = new Schema<ISlackUser>(
   {
     slackId: {
       type: String,
-      unique: true
+      unique: true,
     },
     user: {
       type: Schema.Types.ObjectId,
@@ -16,7 +16,12 @@ const SlackUserSchema = new Schema<ISlackUser>(
     team: {
       type: Schema.Types.ObjectId,
       ref: 'Team',
-    }
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'user'],
+      default: 'user',
+    },
   },
   {
     timestamps: true,
@@ -32,4 +37,3 @@ const SlackUserSchema = new Schema<ISlackUser>(
 const SlackUser = mongoose.model<ISlackUser>('SlackUser', SlackUserSchema);
 
 export default SlackUser;
-

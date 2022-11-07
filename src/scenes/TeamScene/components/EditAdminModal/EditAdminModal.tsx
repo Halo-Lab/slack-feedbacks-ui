@@ -1,78 +1,103 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import Modal from '@mui/material/Modal';
+import ClipLoader from 'react-spinners/ClipLoader';
 
+import Checkbox from 'src/components/atoms/inputs/Checkbox/Checkbox';
 import CustomButton from 'src/components/atoms/Button/CustomButton';
 import Textarea from 'src/components/atoms/inputs/Textarea/Textarea';
-import { IUserInfoFeedback, IUserInfoFromTo } from '../../../HomeScene/HomeScene';
+import Select from 'src/components/atoms/inputs/Select/Select';
 
-import classes from './EditFeedbackModal.module.scss';
+import classes from './EditAdminModal.module.scss';
 
-type IProps = {
-  handleClose: () => void;
-  userInfoFeedback: IUserInfoFeedback;
-  open: boolean;
+type ITeam = {
+  _id: string;
+  name: string;
+  lang: string;
+  welcomeMessage: string;
 };
 
-type IOnchange = {
-  value: string;
+type IFeature = {
+  _id: string;
+  command: string;
 };
 
-type IEditedUserFeedback = {
+type ITeamFeatures = {
+  _id: string;
+  team: ITeam;
+  feature: IFeature;
+};
+
+type IEditedTeamFeatures = {
   id: string;
-  feedbackText: string;
-  from: IUserInfoFromTo;
+  checked: boolean;
+};
+
+type IEditedTeam = {
+  _id: string;
+  name: string;
+  lang: string;
+  welcomeMessage: string;
+  features: IEditedTeamFeatures[];
   errorText: string;
 };
 
-export default function EditFeedbackModal({ open, handleClose, userInfoFeedback }: IProps) {
+type IAdmin = {
+  email: string;
+  adminAccess: boolean;
+};
+
+type IProps = {
+  handleClose: () => void;
+  teamInfo: ITeam;
+  adminInfo: IAdmin;
+  open: boolean;
+};
+
+export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo }: IProps) {
   const router = useRouter();
   const [isFetching, setIsFetching] = useState(false);
-  const [editedUserFeedback, setEditedUserFeedback] = useState<IEditedUserFeedback>({
-    id: userInfoFeedback._id,
-    feedbackText: userInfoFeedback.content,
-    from: userInfoFeedback.from,
+  const [features, setFeatures] = useState<IFeature[]>();
+  const [teamFeatures, setTeamFeatures] = useState<ITeamFeatures[]>();
+  const [editedTeamData, setEditedTeamData] = useState<IEditedTeam>({
+    _id: teamInfo._id,
+    name: teamInfo.name,
+    lang: teamInfo.lang,
+    welcomeMessage: teamInfo.welcomeMessage,
+    features: [],
     errorText: '',
   });
 
-  const onChange = ({ value }: IOnchange) => {
-    const editedUserFeedbackNew = { ...editedUserFeedback };
-    editedUserFeedbackNew.feedbackText = value;
-    editedUserFeedbackNew.errorText = '';
+  const checkInitialTeamInfo = (editedTeamObj: IEditedTeam) =>
+    editedTeamObj.lang === teamInfo.lang &&
+    editedTeamObj.welcomeMessage === teamInfo.welcomeMessage;
 
-    setEditedUserFeedback(editedUserFeedbackNew);
+  const checkInitialTeamFeatures = (editedTeamObj: IEditedTeam) => {
+    const formattedTeamFeatures = features?.map(
+      (feature: IFeature) =>
+        ({
+          id: feature._id,
+          checked: !!teamFeatures?.find(
+            (teamFeature: ITeamFeatures) => teamFeature.feature._id === feature._id
+          ),
+        } as IEditedTeamFeatures)
+    );
+
+    return JSON.stringify(editedTeamObj.features) === JSON.stringify(formattedTeamFeatures);
   };
 
-  const validate = async ({ value }: IOnchange): Promise<IEditedUserFeedback> => {
-    const trimmedValue = value?.trim();
-    const editedUserNew = JSON.parse(JSON.stringify(editedUserFeedback));
-    editedUserNew.feedbackText = value;
-    if (!trimmedValue || trimmedValue.length === 0) {
-      editedUserNew.errorText = 'This field can not be empty';
-    }
-    return editedUserNew;
-  };
-
-  const onBlur = async ({ value }: IOnchange) => {
-    const editedUserFeedbackNew = await validate({ value });
-
-    setEditedUserFeedback(editedUserFeedbackNew);
-  };
-
-  const checkCorrect = (userObject: IEditedUserFeedback) => userObject.errorText === '';
-
-  const checkInitial = (userObject: IEditedUserFeedback) =>
-    userObject.feedbackText === userInfoFeedback.content;
-
-  const handleEdit = async (userInfoFeedbackObject: IEditedUserFeedback) => {
+  const handleEditTeamInfo = async (teamInfoObject: ITeam) => {
     try {
-      const response = await fetch('/api/edit-user-feedback', {
+      const response = await fetch('/api/edit-team-info', {
         method: 'POST',
         body: JSON.stringify({
-          id: userInfoFeedbackObject.id,
-          content: userInfoFeedbackObject.feedbackText,
-          email: userInfoFeedbackObject.from.user.email,
+          team: {
+            id: teamInfoObject._id,
+            lang: teamInfoObject.lang,
+            welcomeMessage: teamInfoObject.welcomeMessage,
+          },
+          admin: adminInfo,
         }),
       });
 
@@ -83,29 +108,106 @@ export default function EditFeedbackModal({ open, handleClose, userInfoFeedback 
     }
   };
 
-  const onSave = async () => {
-    setIsFetching(true);
-    const editedUserFeedbackNew: IEditedUserFeedback = JSON.parse(
-      JSON.stringify(editedUserFeedback)
-    );
+  const handleEditTeamFeatures = async (teamFeaturesArr: IEditedTeamFeatures[]) => {
+    try {
+      const response = await fetch('/api/edit-team-features', {
+        method: 'POST',
+        body: JSON.stringify({
+          teamId: teamInfo._id,
+          teamFeatures: teamFeaturesArr,
+          admin: adminInfo,
+        }),
+      });
 
-    const editedFeedback = await validate({
-      value: editedUserFeedback.feedbackText || '',
-    });
+      const data = await response.json();
 
-    editedUserFeedbackNew.errorText = editedFeedback.errorText;
-    const isCorrect = checkCorrect(editedUserFeedbackNew);
-    if (isCorrect) {
-      setIsFetching(false);
-
-      await handleEdit(editedUserFeedbackNew);
-
-      router.reload();
-      handleClose();
-    } else {
-      setIsFetching(false);
+      return data;
+    } catch (e) {
+      console.log(e);
     }
   };
+
+  const onSave = async () => {
+    setIsFetching(true);
+    const editedTeamDataNew: IEditedTeam = JSON.parse(JSON.stringify(editedTeamData));
+    setIsFetching(false);
+
+    if (!checkInitialTeamInfo(editedTeamDataNew)) {
+      await handleEditTeamInfo(editedTeamDataNew);
+    }
+
+    if (!checkInitialTeamFeatures(editedTeamDataNew)) {
+      await handleEditTeamFeatures(editedTeamDataNew.features);
+    }
+
+    router.reload();
+    handleClose();
+  };
+
+  const getFeatures = async (teamFeaturesData: ITeamFeatures[]) => {
+    try {
+      const response = await fetch('/api/features', {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      setFeatures(data.features);
+      setEditedTeamData({
+        ...editedTeamData,
+        features: data.features.map(
+          (feature: IFeature) =>
+            ({
+              id: feature._id,
+              checked: !!teamFeaturesData.find(
+                (teamFeature: ITeamFeatures) => teamFeature.feature._id === feature._id
+              ),
+            } as IEditedTeamFeatures)
+        ),
+      });
+      setIsFetching(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getTeamFeatures = async () => {
+    try {
+      const response = await fetch('/api/team-features', {
+        method: 'POST',
+        body: JSON.stringify({
+          teamId: teamInfo._id,
+        }),
+      });
+
+      const data = await response.json();
+
+      setTeamFeatures(data.teamFeatures);
+
+      await getFeatures(data.teamFeatures);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const checker = ({ checked, id }: IEditedTeamFeatures) => {
+    const featureIndex = features?.findIndex((feature) => feature._id === id);
+
+    const copyFeatures = [...editedTeamData.features];
+    copyFeatures[featureIndex || 0].id = id;
+    copyFeatures[featureIndex || 0].checked = checked;
+
+    setEditedTeamData({
+      ...editedTeamData,
+      features: copyFeatures,
+    });
+  };
+
+  useEffect(() => {
+    setIsFetching(true);
+
+    getTeamFeatures();
+  }, [teamInfo._id]);
 
   return (
     <Modal
@@ -114,31 +216,66 @@ export default function EditFeedbackModal({ open, handleClose, userInfoFeedback 
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <div
-        className={classes.container}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <h1>Your Feedback To: {userInfoFeedback.to.user.name}</h1>
-        <Textarea
-          inputValue={editedUserFeedback.feedbackText || ''}
-          onBlur={onBlur}
-          onChange={onChange}
-          inputError={editedUserFeedback.errorText}
-        ></Textarea>
-        <div className={classes.button}>
-          <CustomButton
-            variant="contained"
-            onClick={onSave}
-            disabled={!(checkCorrect(editedUserFeedback) && !checkInitial(editedUserFeedback))}
-            isLoading={isFetching}
-          >
-            Save
-          </CustomButton>
+      <div className={classes.container}>
+        <div className={classes.loader}>
+          <ClipLoader color={'gray'} loading={isFetching} size={150} />
         </div>
+        {teamFeatures && adminInfo.adminAccess && features && (
+          <div className={classes.adminPanel}>
+            <div className={classes.teamTitle}>{editedTeamData.name}</div>
+            <div className={classes.language}>
+              <Select
+                label={'Language:'}
+                id={teamInfo._id}
+                inputValue={editedTeamData.lang || ''}
+                children={[
+                  { name: 'English', value: 'en' },
+                  { name: 'Українська', value: 'ua' },
+                ]}
+                onChange={({ value }) => setEditedTeamData({ ...editedTeamData, lang: value })}
+              ></Select>
+            </div>
+            <div className={classes.featuresFlag}>
+              <h2 className={classes.featureTitle}>Features:</h2>
+              <div className={classes.feature}>
+                {features.map((feature) => (
+                  <Checkbox
+                    id={feature._id}
+                    label={feature.command}
+                    onChange={checker}
+                    checked={
+                      editedTeamData.features.find(
+                        (editedFeature) => feature._id === editedFeature.id
+                      )?.checked || false
+                    }
+                  ></Checkbox>
+                ))}
+              </div>
+            </div>
+            <div className={classes.welcomeMessage}>
+              <h2 className={classes.messageTitle}>Welcome Message</h2>
+              <p>Use {'{{tag}}'}. Tags: username, channel, link</p>
+            </div>
+            <Textarea
+              inputValue={editedTeamData.welcomeMessage || ''}
+              onChange={({ value }) =>
+                setEditedTeamData({ ...editedTeamData, welcomeMessage: value })
+              }
+            ></Textarea>
+            <div className={classes.button}>
+              <CustomButton
+                variant="contained"
+                onClick={onSave}
+                disabled={
+                  checkInitialTeamInfo(editedTeamData) && checkInitialTeamFeatures(editedTeamData)
+                }
+                isLoading={isFetching}
+              >
+                Save
+              </CustomButton>
+            </div>
+          </div>
+        )}
       </div>
     </Modal>
   );
