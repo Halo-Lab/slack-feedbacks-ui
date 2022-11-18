@@ -9,8 +9,8 @@ import { authOptions } from './auth/[...nextauth]';
 const uri: string = process.env.MONGO_URI || '';
 
 type IEditedTeamFeatures = {
-  id: string;
   checked: boolean;
+  command: string;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -22,8 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!body.teamId) {
       return res.status(401).json({ error: 'teamId is required' });
     }
-    if (body.teamFeatures.find((el: IEditedTeamFeatures) => !el.id)) {
-      return res.status(400).json({ error: 'Feature field id is required' });
+    if (Object.keys(body.teamFeatures).length === 0) {
+      return res.status(400).json({ error: 'teamFeatures object is required' });
     }
     if (!session) {
       return res.status(401).json({ error: 'Not authenticated' });
@@ -34,8 +34,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     await mongoose.connect(uri);
 
-    for (const teamFeature of body.teamFeatures) {
-      const { id, checked } = teamFeature as IEditedTeamFeatures;
+    for (const [id, featureObj] of Object.entries(body.teamFeatures)) {
+      const { checked } = featureObj as IEditedTeamFeatures;
 
       if (checked) {
         await TeamFeatures.updateOne(
