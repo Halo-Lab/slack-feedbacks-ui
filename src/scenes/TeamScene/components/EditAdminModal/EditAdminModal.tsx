@@ -30,6 +30,13 @@ type ITeamFeatures = {
 };
 
 type IEditedTeamFeatures = {
+  [key: string]: {
+    checked: boolean;
+    command: string;
+  };
+};
+
+type IChecker = {
   id: string;
   checked: boolean;
 };
@@ -39,7 +46,7 @@ type IEditedTeam = {
   name: string;
   lang: string;
   welcomeMessage: string;
-  features: IEditedTeamFeatures[];
+  features: IEditedTeamFeatures | Record<string, never>;
   errorText: string;
 };
 
@@ -65,24 +72,33 @@ export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo 
     name: teamInfo.name,
     lang: teamInfo.lang,
     welcomeMessage: teamInfo.welcomeMessage,
-    features: [],
+    features: {},
     errorText: '',
   });
+
+  const getFormattedTeamFeatures = (
+    featuresArr: IFeature[] = [],
+    teamFeaturesArr: ITeamFeatures[] = []
+  ) => {
+    return featuresArr.reduce((acc: IEditedTeamFeatures, featureObj: IFeature) => {
+      const newFeatureObj = JSON.parse(JSON.stringify(acc));
+      newFeatureObj[featureObj._id] = {
+        command: featureObj.command,
+        checked: !!teamFeaturesArr.find(
+          (teamFeatureObj: ITeamFeatures) => teamFeatureObj.feature._id === featureObj._id
+        ),
+      };
+
+      return newFeatureObj;
+    }, {});
+  };
 
   const checkInitialTeamInfo = (editedTeamObj: IEditedTeam) =>
     editedTeamObj.lang === teamInfo.lang &&
     editedTeamObj.welcomeMessage === teamInfo.welcomeMessage;
 
   const checkInitialTeamFeatures = (editedTeamObj: IEditedTeam) => {
-    const formattedTeamFeatures = features?.map(
-      (feature: IFeature) =>
-        ({
-          id: feature._id,
-          checked: !!teamFeatures?.find(
-            (teamFeature: ITeamFeatures) => teamFeature.feature._id === feature._id
-          ),
-        } as IEditedTeamFeatures)
-    );
+    const formattedTeamFeatures = getFormattedTeamFeatures(features, teamFeatures);
 
     return JSON.stringify(editedTeamObj.features) === JSON.stringify(formattedTeamFeatures);
   };
@@ -108,13 +124,13 @@ export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo 
     }
   };
 
-  const handleEditTeamFeatures = async (teamFeaturesArr: IEditedTeamFeatures[]) => {
+  const handleEditTeamFeatures = async (editedTeamFeaturesArr: IEditedTeamFeatures) => {
     try {
       const response = await fetch('/api/edit-team-features', {
         method: 'POST',
         body: JSON.stringify({
           teamId: teamInfo._id,
-          teamFeatures: teamFeaturesArr,
+          teamFeatures: editedTeamFeaturesArr,
           admin: adminInfo,
         }),
       });
@@ -130,7 +146,6 @@ export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo 
   const onSave = async () => {
     setIsFetching(true);
     const editedTeamDataNew: IEditedTeam = JSON.parse(JSON.stringify(editedTeamData));
-    setIsFetching(false);
 
     if (!checkInitialTeamInfo(editedTeamDataNew)) {
       await handleEditTeamInfo(editedTeamDataNew);
@@ -139,6 +154,8 @@ export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo 
     if (!checkInitialTeamFeatures(editedTeamDataNew)) {
       await handleEditTeamFeatures(editedTeamDataNew.features);
     }
+
+    setIsFetching(false);
 
     router.reload();
     handleClose();
@@ -155,15 +172,7 @@ export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo 
       setFeatures(data.features);
       setEditedTeamData({
         ...editedTeamData,
-        features: data.features.map(
-          (feature: IFeature) =>
-            ({
-              id: feature._id,
-              checked: !!teamFeaturesData.find(
-                (teamFeature: ITeamFeatures) => teamFeature.feature._id === feature._id
-              ),
-            } as IEditedTeamFeatures)
-        ),
+        features: getFormattedTeamFeatures(data.features, teamFeaturesData),
       });
       setIsFetching(false);
     } catch (e) {
@@ -190,16 +199,13 @@ export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo 
     }
   };
 
-  const checker = ({ checked, id }: IEditedTeamFeatures) => {
-    const featureIndex = features?.findIndex((feature) => feature._id === id);
-
-    const copyFeatures = [...editedTeamData.features];
-    copyFeatures[featureIndex || 0].id = id;
-    copyFeatures[featureIndex || 0].checked = checked;
+  const checker = ({ checked, id }: IChecker) => {
+    const newEditFeatures = JSON.parse(JSON.stringify(editedTeamData.features));
+    newEditFeatures[id as keyof IEditedTeamFeatures].checked = checked;
 
     setEditedTeamData({
       ...editedTeamData,
-      features: copyFeatures,
+      features: newEditFeatures,
     });
   };
 
@@ -238,16 +244,12 @@ export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo 
             <div className={classes.featuresFlag}>
               <h2 className={classes.featureTitle}>Features:</h2>
               <div className={classes.feature}>
-                {features.map((feature) => (
+                {Object.keys(editedTeamData.features).map((key) => (
                   <Checkbox
-                    id={feature._id}
-                    label={feature.command}
+                    id={key}
+                    label={editedTeamData.features[key].command}
                     onChange={checker}
-                    checked={
-                      editedTeamData.features.find(
-                        (editedFeature) => feature._id === editedFeature.id
-                      )?.checked || false
-                    }
+                    checked={editedTeamData.features[key].checked}
                   ></Checkbox>
                 ))}
               </div>
