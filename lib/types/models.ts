@@ -43,6 +43,7 @@ export interface IFeedback {
   content: string;
   required: boolean;
   anonymous?: boolean;
+  showContent: boolean;
 }
 
 export interface IRequestFb {

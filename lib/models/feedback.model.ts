@@ -14,11 +14,15 @@ const FeedbackSchema = new Schema<IFeedback>(
     },
     content: {
       type: String,
-      default: ''
+      default: '',
+    },
+    showContent: {
+      type: Boolean,
+      default: true,
     },
     anonymous: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   {

@@ -48,15 +48,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         select: ['slackId', 'user'],
         populate: {
           path: 'user',
-          select: ['name'],
+          select: ['name', 'email'],
         },
       })
       .populate<{ child: ISlackUser }>({
         path: 'to',
-        select: ['slackId'],
+        select: ['slackId', 'user'],
+        populate: {
+          path: 'user',
+          select: ['name', 'email'],
+        },
       })
       .sort({ createdAt: -1 })
-      .select(['content', 'from', 'to'])
+      .select(['content', 'from', 'to', 'showContent'])
       .lean();
 
     const slackUsersWithFeedbacks = slackUsers.map((slackUser) => {

@@ -70,8 +70,11 @@ export default function EditFeedbackModal({ open, handleClose, userInfoFeedback 
       const response = await fetch('/api/edit-user-feedback', {
         method: 'POST',
         body: JSON.stringify({
-          id: userInfoFeedbackObject.id,
-          content: userInfoFeedbackObject.feedbackText,
+          feedbacks: {
+            [userInfoFeedbackObject.id]: {
+              content: userInfoFeedbackObject.feedbackText,
+            },
+          },
           email: userInfoFeedbackObject.from.user.email,
         }),
       });
@@ -114,14 +117,7 @@ export default function EditFeedbackModal({ open, handleClose, userInfoFeedback 
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <div
-        className={classes.container}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
+      <div className={classes.container}>
         <h1>Your Feedback To: {userInfoFeedback.to.user.name}</h1>
         <Textarea
           inputValue={editedUserFeedback.feedbackText || ''}
