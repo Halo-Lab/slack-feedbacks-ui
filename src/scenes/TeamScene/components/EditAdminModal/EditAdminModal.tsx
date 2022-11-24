@@ -79,7 +79,7 @@ export default function EditAdminModal({ open, handleClose, teamInfo, adminInfo 
   const getFormattedTeamFeatures = (
     featuresArr: IFeature[] = [],
     teamFeaturesArr: ITeamFeatures[] = []
-  ) => {
+  ): IEditedTeamFeatures => {
     return featuresArr.reduce((acc: IEditedTeamFeatures, featureObj: IFeature) => {
       const newFeatureObj = JSON.parse(JSON.stringify(acc));
       newFeatureObj[featureObj._id] = {

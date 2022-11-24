@@ -25,6 +25,7 @@ export type IUserInfoFeedback = {
   content: string;
   from: IUserInfoFromTo;
   to: IUserInfoFromTo;
+  showContent: boolean;
 };
 
 export type IUserInfo = {

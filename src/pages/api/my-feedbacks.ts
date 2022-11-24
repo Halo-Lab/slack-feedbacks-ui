@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       })
       .sort({ createdAt: -1 })
-      .select(['content', 'from', 'to'])
+      .select(['content', 'from', 'to', 'showContent'])
       .lean();
 
     const slackUsersWithFeedbacks = slackUsers.map((slackUser) => {

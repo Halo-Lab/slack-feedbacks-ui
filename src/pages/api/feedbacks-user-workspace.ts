@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { unstable_getServerSession } from 'next-auth/next';
 
 import mongoose from 'lib/mongoose';
 import User from 'lib/models/user.model';
@@ -6,6 +7,8 @@ import SlackUser from 'lib/models/slackuser.model';
 import Feedback from 'lib/models/feedback.model';
 import Team from 'lib/models/team.model';
 import { ISlackUser } from 'lib/types/models';
+
+import { authOptions } from './auth/[...nextauth]';
 
 const uri: string = process.env.MONGO_URI || '';
 
@@ -25,7 +28,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const slackUser = await SlackUser.findOne({ team: team?._id, user: user?._id });
 
+    const session = await unstable_getServerSession(req, res, authOptions);
+
+    const filterObj = {} as { showContent?: boolean };
+
+    if (!session || !session.user || !session.user.email) {
+      filterObj.showContent = true;
+    } else {
+      const currentUser = await User.findOne({ email: session.user.email });
+
+      if (!currentUser) {
+        filterObj.showContent = true;
+      } else {
+        const currentSlackUser = await SlackUser.findOne({
+          team: team?._id,
+          user: currentUser._id,
+        });
+
+        if (!currentSlackUser) {
+          filterObj.showContent = true;
+        }
+      }
+    }
+
     const feedbacksTo = await Feedback.find({ to: slackUser?._id })
+      .where(filterObj)
       .populate<{ child: ISlackUser }>({
         path: 'from',
         select: ['slackId', 'user'],
@@ -38,6 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .select(['content', 'from', 'createdAt']);
 
     const feedbacksFrom = await Feedback.find({ from: slackUser?._id })
+      .where(filterObj)
       .populate<{ child: ISlackUser }>({
         path: 'to',
         select: ['slackId', 'user'],
